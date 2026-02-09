@@ -1,0 +1,1277 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản Lý Nhân Sự</title>
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Select2 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    
+    <!-- Flatpickr -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css" />
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%);
+            padding: 10px;
+            min-height: 100vh;
+            position: relative;
+            font-size: 13px;
+        }
+        
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 50%, rgba(0, 180, 216, 0.15), transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(0, 119, 182, 0.15), transparent 50%),
+                radial-gradient(circle at 40% 20%, rgba(3, 4, 94, 0.1), transparent 50%);
+            z-index: -1;
+            animation: gradientShift 15s ease infinite;
+        }
+        
+        @keyframes gradientShift {
+            0%, 100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.8;
+            }
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.98);
+            border-radius: 10px;
+            box-shadow: 0 5px 20px rgba(31, 38, 135, 0.1);
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .container.fullscreen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            max-width: 100vw;
+            margin: 0;
+            border-radius: 0;
+            z-index: 9999;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #0575e6 0%, #021b79 100%);
+            color: white;
+            padding: 15px 25px;
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            box-shadow: 0 3px 12px rgba(0, 0, 0, 0.08);
+        }
+
+        .header-buttons {
+            display: flex;
+            gap: 8px;
+        }
+
+        .header-button {
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 16px;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .header-button:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(1.05);
+        }
+
+        .form-container {
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .container.fullscreen .form-container {
+            height: calc(100vh - 62px);
+        }
+
+        .section-card {
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.05);
+            border: 1px solid rgba(102, 126, 234, 0.08);
+        }
+        
+        .section-card:hover {
+            box-shadow: 0 3px 12px rgba(102, 126, 234, 0.1);
+        }
+
+        .section-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: #2d3748;
+            margin-bottom: 15px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #0575e6;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .section-title i {
+            color: #0575e6;
+            width: 20px;
+            text-align: center;
+        }
+
+        /* Desktop: 3 cột, label và input cùng hàng */
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-bottom: 0;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            margin-bottom: 0;
+            gap: 8px;
+        }
+
+        .form-group label {
+            font-size: 12px;
+            color: #4a5568;
+            font-weight: 600;
+            flex-shrink: 0;
+            width: 110px;
+            text-align: left;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            padding: 6px 10px;
+            border: 1px solid #cbd5e0;
+            border-radius: 4px;
+            font-size: 13px;
+            transition: all 0.2s;
+            background: white;
+            font-family: inherit;
+            height: 34px;
+            flex: 1;
+            min-width: 0;
+        }
+
+        /* Date input styling */
+        .form-group input[type="text"].date-input {
+            background-color: white;
+            cursor: pointer;
+            padding-right: 30px !important;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%234a5568' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='4' width='18' height='18' rx='2' ry='2'%3E%3C/rect%3E%3Cline x1='16' y1='2' x2='16' y2='6'%3E%3C/line%3E%3Cline x1='8' y1='2' x2='8' y2='6'%3E%3C/line%3E%3Cline x1='3' y1='10' x2='21' y2='10'%3E%3C/line%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 10px center;
+            background-size: 16px;
+        }
+
+        .form-group input[type="text"].date-input:hover {
+            border-color: #0575e6;
+        }
+
+        .form-group textarea {
+            height: auto;
+            min-height: 60px;
+            resize: vertical;
+            padding: 8px 10px;
+        }
+
+        .form-group.full-width {
+            grid-column: 1 / -1;
+        }
+
+        .form-group.full-width label {
+            width: 110px;
+            align-self: flex-start;
+            padding-top: 8px;
+        }
+
+        .form-group.full-width textarea {
+            flex: 1;
+        }
+
+        .form-group input:hover,
+        .form-group select:hover,
+        .form-group textarea:hover {
+            border-color: #a0aec0;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #0575e6;
+            box-shadow: 0 0 0 2px rgba(5, 117, 230, 0.1);
+        }
+
+        .form-group input[readonly] {
+            background-color: #f7fafc;
+            cursor: not-allowed;
+            color: #718096;
+            border-color: #e2e8f0;
+        }
+
+        /* Toggle section - Desktop: 5 toggle trên 1 hàng, label căn trái */
+        .toggle-section {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 10px;
+            margin-bottom: 0;
+        }
+
+        .toggle-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .toggle-group label {
+            font-size: 12px;
+            color: #4a5568;
+            font-weight: 600;
+            text-align: left;
+        }
+
+        .toggle-container {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .toggle {
+            position: relative;
+            width: 40px;
+            height: 20px;
+            background: #cbd5e0;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: background 0.2s;
+            flex-shrink: 0;
+        }
+
+        .toggle.active {
+            background: #0575e6;
+        }
+
+        .toggle-slider {
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 16px;
+            height: 16px;
+            background: white;
+            border-radius: 50%;
+            transition: transform 0.2s;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+        }
+
+        .toggle.active .toggle-slider {
+            transform: translateX(20px);
+        }
+
+        .button-group {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 0;
+            padding: 15px;
+            background: #f8f9ff;
+            border-radius: 8px;
+            box-shadow: 0 2px 6px rgba(102, 126, 234, 0.05);
+        }
+
+        .btn {
+            padding: 8px 20px;
+            border: none;
+            border-radius: 5px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            height: 34px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #0575e6 0%, #021b79 100%);
+            color: white;
+            box-shadow: 0 2px 6px rgba(5, 117, 230, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 3px 8px rgba(5, 117, 230, 0.4);
+        }
+
+        .btn-secondary {
+            background: #e2e8f0;
+            color: #4a5568;
+        }
+
+        .btn-secondary:hover {
+            background: #cbd5e0;
+            transform: translateY(-1px);
+        }
+
+        /* Flatpickr Custom Styling */
+        .flatpickr-calendar {
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+            border-radius: 8px;
+            font-family: inherit;
+            border: 1px solid #0575e6;
+        }
+        
+        .flatpickr-months {
+            background: #0575e6;
+            border-radius: 8px 8px 0 0;
+        }
+        
+        .flatpickr-current-month {
+            color: white;
+        }
+        
+        .flatpickr-months .flatpickr-month {
+            color: white;
+        }
+        
+        .flatpickr-months .flatpickr-prev-month,
+        .flatpickr-months .flatpickr-next-month {
+            color: white;
+            fill: white;
+        }
+        
+        .flatpickr-months .flatpickr-prev-month:hover,
+        .flatpickr-months .flatpickr-next-month:hover {
+            color: rgba(255, 255, 255, 0.8);
+        }
+        
+        .flatpickr-weekdays {
+            background: #f7fafc;
+        }
+        
+        span.flatpickr-weekday {
+            color: #4a5568;
+            font-weight: 600;
+        }
+        
+        .flatpickr-day.selected {
+            background: #0575e6;
+            border-color: #0575e6;
+        }
+        
+        .flatpickr-day.today {
+            border-color: #0575e6;
+        }
+        
+        .flatpickr-day.today:hover,
+        .flatpickr-day:hover {
+            background: #edf2f7;
+            border-color: #0575e6;
+        }
+
+        /* Responsive cho tablet */
+        @media (max-width: 1024px) {
+            .form-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .toggle-section {
+                grid-template-columns: repeat(3, 1fr);
+                gap: 12px;
+            }
+            
+            .form-group label {
+                width: 100px;
+            }
+        }
+
+        /* Responsive cho mobile */
+        @media (max-width: 768px) {
+            body {
+                padding: 5px;
+                font-size: 12px;
+            }
+
+            .header {
+                padding: 12px 15px;
+            }
+
+            .header h1 {
+                font-size: 18px;
+            }
+
+            .form-container {
+                padding: 10px;
+            }
+
+            .section-card {
+                padding: 12px;
+                margin-bottom: 12px;
+            }
+
+            .section-title {
+                font-size: 14px;
+                margin-bottom: 12px;
+            }
+
+            /* Mobile: 1 cột, label và input cùng hàng */
+            .form-grid {
+                grid-template-columns: 1fr;
+                gap: 10px;
+            }
+            
+            .form-group {
+                flex-direction: row;
+                align-items: center;
+                gap: 8px;
+            }
+            
+            .form-group label {
+                width: 100px;
+                font-size: 11px;
+                text-align: left;
+            }
+            
+            .form-group input,
+            .form-group select,
+            .form-group textarea {
+                font-size: 12px;
+                padding: 6px 8px;
+                height: 32px;
+            }
+            
+            .form-group.full-width label {
+                width: 100px;
+                align-self: center;
+                padding-top: 0;
+            }
+            
+            .form-group.full-width textarea {
+                height: auto;
+                min-height: 60px;
+            }
+
+            /* Mobile: Toggle section - 2 cột để giảm khoảng trống */
+            .toggle-section {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 8px;
+            }
+            
+            .toggle-group {
+                flex-direction: row;
+                align-items: center;
+                justify-content: space-between;
+                gap: 8px;
+            }
+            
+            .toggle-group label {
+                font-size: 11px;
+                margin-bottom: 0;
+                flex: 1;
+            }
+            
+            .toggle {
+                width: 36px;
+                height: 18px;
+            }
+            
+            .toggle-slider {
+                width: 14px;
+                height: 14px;
+            }
+            
+            .toggle.active .toggle-slider {
+                transform: translateX(18px);
+            }
+
+            .button-group {
+                flex-direction: column-reverse;
+                padding: 12px;
+                gap: 8px;
+            }
+
+            .btn {
+                width: 100%;
+                padding: 10px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .header h1 {
+                font-size: 16px;
+            }
+
+            .section-card {
+                padding: 10px;
+            }
+
+            .form-group label {
+                width: 90px;
+                font-size: 10px;
+            }
+
+            .form-group input,
+            .form-group select,
+            .form-group textarea {
+                font-size: 11px;
+                padding: 5px 8px;
+                height: 30px;
+            }
+            
+            .form-group.full-width label {
+                width: 90px;
+                align-self: center;
+                padding-top: 0;
+            }
+            
+            .form-group.full-width textarea {
+                height: auto;
+                min-height: 60px;
+            }
+            
+            /* Trên màn hình rất nhỏ, toggle thành 1 cột nhưng vẫn label và toggle cùng hàng */
+            @media (max-width: 360px) {
+                .toggle-section {
+                    grid-template-columns: 1fr;
+                }
+            }
+        }
+
+        /* Select2 Custom Styling */
+        .select2-container--default .select2-selection--single {
+            height: 34px;
+            border: 1px solid #cbd5e0;
+            border-radius: 4px;
+        }
+
+        .select2-container--default .select2-selection--single .select2-selection__rendered {
+            line-height: 32px;
+            color: #2d3748;
+            font-size: 13px;
+            padding-left: 10px;
+        }
+
+        .select2-container--default .select2-selection--single .select2-selection__arrow {
+            height: 32px;
+        }
+
+        .select2-dropdown {
+            border: 1px solid #0575e6;
+            border-radius: 4px;
+            font-size: 13px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="header-buttons">
+                <button class="header-button" onclick="toggleFullscreen()" title="Phóng to/Thu nhỏ">
+                    <i class="fas fa-expand" id="resizeIcon"></i>
+                </button>
+                <button class="header-button" onclick="window.close()" title="Đóng">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+        </div>
+
+        <div class="form-container">
+            <form id="employeeForm">
+                
+                <!-- Thông tin cơ bản -->
+                <div class="section-card">
+                    <h2 class="section-title"><i class="far fa-id-card"></i> Thông Tin Cơ Bản</h2>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Mã số</label>
+                            <input type="text" id="employeeId" value="02170010" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label>Họ và tên</label>
+                            <input type="text" id="fullName" placeholder="Nhập họ và tên">
+                        </div>
+                        <div class="form-group">
+                            <label>Nam|Nữ</label>
+                            <select id="gender"></select>
+                        </div>
+                        <div class="form-group">
+                            <label>Ngày sinh</label>
+                            <input type="text" id="birthDate" class="date-input" placeholder="DD-MMM-YYYY">
+                        </div>
+                        <div class="form-group">
+                            <label>Số điện thoại</label>
+                            <input type="tel" id="phone" placeholder="Số điện thoại">
+                        </div>
+                        <div class="form-group">
+                            <label>Email</label>
+                            <input type="email" id="email" placeholder="Email">
+                        </div>
+                        <div class="form-group">
+                            <label>Dân tộc</label>
+                            <select id="ethnicity"></select>
+                        </div>
+                        <div class="form-group">
+                            <label>Tôn giáo</label>
+                            <select id="religion"></select>
+                        </div>
+                        <div class="form-group full-width">
+                            <label>Địa chỉ</label>
+                            <textarea id="address" placeholder="Địa chỉ" rows="2"></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Thông tin công việc -->
+                <div class="section-card">
+                    <h2 class="section-title"><i class="fas fa-briefcase"></i> Thông Tin Công Việc</h2>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Chức vụ</label>
+                            <select id="position"></select>
+                        </div>
+                        <div class="form-group">
+                            <label>Công việc</label>
+                            <select id="jobTitle"></select>
+                        </div>
+                        <div class="form-group">
+                            <label>Bộ phận</label>
+                            <select id="department"></select>
+                        </div>
+                        <div class="form-group">
+                            <label>CV Thực tế</label>
+                            <select id="actualJob"></select>
+                        </div>
+                        <div class="form-group">
+                            <label>Ngày vào</label>
+                            <input type="text" id="startDate" class="date-input" placeholder="DD-MMM-YYYY">
+                        </div>
+                        <div class="form-group">
+                            <label>Nơi làm việc</label>
+                            <select id="workplace"></select>
+                        </div>
+                        <div class="form-group">
+                            <label>Kiểu</label>
+                            <select id="employmentType"></select>
+                        </div>
+                        <div class="form-group">
+                            <label>Trạng thái</label>
+                            <select id="status"></select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Hợp đồng -->
+                <div class="section-card">
+                    <h2 class="section-title"><i class="fas fa-file-contract"></i> Thông Tin Hợp Đồng</h2>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Số hợp đồng</label>
+                            <input type="text" id="contractNumber" placeholder="Số hợp đồng">
+                        </div>
+                        <div class="form-group">
+                            <label>Ngày ký</label>
+                            <input type="text" id="contractDate" class="date-input" placeholder="DD-MMM-YYYY">
+                        </div>
+                        <div class="form-group">
+                            <label>Loại hợp đồng</label>
+                            <select id="contractType"></select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- CCCD, Bảo hiểm & Ngân hàng -->
+                <div class="section-card">
+                    <h2 class="section-title"><i class="fas fa-id-card"></i> CCCD, Bảo Hiểm & Ngân Hàng</h2>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>CCCD</label>
+                            <input type="text" id="idNumber" placeholder="Số CCCD">
+                        </div>
+                        <div class="form-group">
+                            <label>Ngày cấp</label>
+                            <input type="text" id="idIssueDate" class="date-input" placeholder="DD-MMM-YYYY">
+                        </div>
+                        <div class="form-group">
+                            <label>Nơi cấp</label>
+                            <select id="idIssuePlace"></select>
+                        </div>
+                        <div class="form-group">
+                            <label>TNCN</label>
+                            <input type="text" id="taxCode">
+                        </div>
+                        <div class="form-group">
+                            <label>BHXH</label>
+                            <input type="text" id="socialInsurance" placeholder="Số BHXH">
+                        </div>
+                        <div class="form-group">
+                            <label>BHYT</label>
+                            <input type="text" id="healthInsurance" placeholder="Số BHYT">
+                        </div>
+                        <div class="form-group">
+                            <label>Tên ngân hàng</label>
+                            <select id="bankName"></select>
+                        </div>
+                        <div class="form-group">
+                            <label>Số ngân hàng</label>
+                            <input type="text" id="bankAccount" placeholder="Số tài khoản">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Học vấn & Quản lý -->
+                <div class="section-card">
+                    <h2 class="section-title"><i class="fas fa-graduation-cap"></i> Học Vấn & Quản Lý</h2>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Trình độ</label>
+                            <select id="educationLevel"></select>
+                        </div>
+                        <div class="form-group">
+                            <label>Trường học</label>
+                            <input type="text" id="school" placeholder="Tên trường">
+                        </div>
+                        <div class="form-group">
+                            <label>Nhóm nhân sự</label>
+                            <select id="hrGroup"></select>
+                        </div>
+                        <div class="form-group">
+                            <label>Nhóm quản lý</label>
+                            <input type="text" id="managementGroup" placeholder="Nhóm quản lý">
+                        </div>
+                        <div class="form-group">
+                            <label>Mã số QL</label>
+                            <select id="managerId"></select>
+                        </div>
+                        <div class="form-group">
+                            <label>Họ và tên QL</label>
+                            <input type="text" id="hrManagerName" placeholder="Tên QL nhân sự" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label>Mail QL</label>
+                            <input type="email" id="managerEmail" placeholder="Email quản lý" readonly>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Cài đặt chấm công -->
+                <div class="section-card">
+                    <h2 class="section-title"><i class="fas fa-cogs"></i> Cài Đặt Chấm Công</h2>
+                    <div class="toggle-section">
+                        <div class="toggle-group">
+                            <label>Chấm công</label>
+                            <div class="toggle-container">
+                                <div class="toggle" onclick="toggleSwitch(this)">
+                                    <div class="toggle-slider"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="toggle-group">
+                            <label>Đi trễ về sớm</label>
+                            <div class="toggle-container">
+                                <div class="toggle" onclick="toggleSwitch(this)">
+                                    <div class="toggle-slider"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="toggle-group">
+                            <label>Tăng ca</label>
+                            <div class="toggle-container">
+                                <div class="toggle" onclick="toggleSwitch(this)">
+                                    <div class="toggle-slider"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="toggle-group">
+                            <label>Nghỉ bù</label>
+                            <div class="toggle-container">
+                                <div class="toggle" onclick="toggleSwitch(this)">
+                                    <div class="toggle-slider"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="toggle-group">
+                            <label>Nhân sự chủ chốt</label>
+                            <div class="toggle-container">
+                                <div class="toggle" onclick="toggleSwitch(this)">
+                                    <div class="toggle-slider"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-grid" style="margin-top: 15px;">
+                        <div class="form-group">
+                            <label>Nhóm ca làm việc</label>
+                            <select id="shiftGroup"></select>
+                        </div>
+                        <div class="form-group">
+                            <label>Hình thức tuyển dụng</label>
+                            <select id="recruitmentType"></select>
+                        </div>
+                        <div class="form-group">
+                            <label>Nguồn tuyển dụng</label>
+                            <select id="applicationMethod"></select>
+                        </div>
+                        <div class="form-group">
+                            <label>Tên người liên hệ</label>
+                            <input type="text" id="compiler" placeholder="Chưa có thông tin">
+                        </div>
+                        <div class="form-group">
+                            <label>SĐT khẩn cấp</label>
+                            <input type="tel" id="emergencyPhone" placeholder="Chưa có thông tin">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Buttons -->
+                <div class="button-group">
+                    <button type="button" class="btn btn-secondary" onclick="resetForm()">
+                        <i class="fas fa-times"></i> Hủy
+                    </button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-check"></i> Cập nhật
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- jQuery (required for Select2) -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    
+    <!-- Select2 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    
+    <!-- Flatpickr JS -->
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script>
+        // Dữ liệu cho các select
+        const selectData = {
+            gender: [
+                { value: '', text: 'Chọn' },
+                { value: 'Nam', text: 'Nam' },
+                { value: 'Nữ', text: 'Nữ' }
+            ],
+            ethnicity: [
+                { value: '', text: 'Chọn' },
+                { value: 'Kinh', text: 'Kinh' },
+                { value: 'Tày', text: 'Tày' },
+                { value: 'Thái', text: 'Thái' },
+                { value: 'Mường', text: 'Mường' },
+                { value: 'Khmer', text: 'Khmer' },
+                { value: 'Hoa', text: 'Hoa' }
+            ],
+            religion: [
+                { value: '', text: 'Chọn' },
+                { value: 'Không', text: 'Không' },
+                { value: 'Phật giáo', text: 'Phật giáo' },
+                { value: 'Thiên chúa giáo', text: 'Thiên chúa giáo' },
+                { value: 'Tin lành', text: 'Tin lành' },
+                { value: 'Hồi giáo', text: 'Hồi giáo' }
+            ],
+            position: [
+                { value: '', text: 'Chọn' },
+                { value: 'Chuyên viên', text: 'Chuyên viên' },
+                { value: 'Trưởng phòng', text: 'Trưởng phòng' },
+                { value: 'Phó phòng', text: 'Phó phòng' },
+                { value: 'Giám đốc', text: 'Giám đốc' },
+                { value: 'Phó giám đốc', text: 'Phó giám đốc' },
+                { value: 'Nhân viên', text: 'Nhân viên' }
+            ],
+            jobTitle: [
+                { value: '', text: 'Chọn' },
+                { value: 'Chuyên viên Công nghệ Thông tin', text: 'Chuyên viên Công nghệ Thông tin' },
+                { value: 'Kế toán', text: 'Kế toán' },
+                { value: 'Nhân sự', text: 'Nhân sự' },
+                { value: 'Marketing', text: 'Marketing' },
+                { value: 'Kinh doanh', text: 'Kinh doanh' },
+                { value: 'Kỹ thuật', text: 'Kỹ thuật' }
+            ],
+            department: [
+                { value: '', text: 'Chọn' },
+                { value: 'NSIP Phòng Công Nghệ Thông Tin', text: 'NSIP Phòng Công Nghệ Thông Tin' },
+                { value: 'Phòng Kỹ thuật', text: 'Phòng Kỹ thuật' },
+                { value: 'Phòng Kinh doanh', text: 'Phòng Kinh doanh' },
+                { value: 'Phòng Hành chính', text: 'Phòng Hành chính' },
+                { value: 'Phòng Nhân sự', text: 'Phòng Nhân sự' }
+            ],
+            actualJob: [
+                { value: '', text: 'Chọn' },
+                { value: 'Trưởng nhóm', text: 'Trưởng nhóm' },
+                { value: 'Chuyên viên cao cấp', text: 'Chuyên viên cao cấp' },
+                { value: 'Chuyên viên', text: 'Chuyên viên' }
+            ],
+            workplace: [
+                { value: '', text: 'Chọn' },
+                { value: 'Văn phòng', text: 'Văn phòng' },
+                { value: 'Chi nhánh Hà Nội', text: 'Chi nhánh Hà Nội' },
+                { value: 'Chi nhánh TP.HCM', text: 'Chi nhánh TP.HCM' },
+                { value: 'Chi nhánh Đà Nẵng', text: 'Chi nhánh Đà Nẵng' },
+                { value: 'Remote', text: 'Remote' }
+            ],
+            employmentType: [
+                { value: '', text: 'Chọn' },
+                { value: 'Gián tiếp', text: 'Gián tiếp' },
+                { value: 'Chính thức', text: 'Chính thức' },
+                { value: 'Thử việc', text: 'Thử việc' },
+                { value: 'Thời vụ', text: 'Thời vụ' },
+                { value: 'Part-time', text: 'Part-time' }
+            ],
+            status: [
+                { value: '', text: 'Chọn' },
+                { value: 'Đang làm việc', text: 'Đang làm việc' },
+                { value: 'Nghỉ việc', text: 'Nghỉ việc' },
+                { value: 'Tạm nghỉ', text: 'Tạm nghỉ' },
+                { value: 'Nghỉ thai sản', text: 'Nghỉ thai sản' }
+            ],
+            contractType: [
+                { value: '', text: 'Chọn' },
+                { value: 'Hợp đồng không xác định thời hạn', text: 'Hợp đồng không xác định thời hạn' },
+                { value: 'Hợp đồng xác định thời hạn 12 tháng', text: 'Hợp đồng xác định thời hạn 12 tháng' },
+                { value: 'Hợp đồng xác định thời hạn 24 tháng', text: 'Hợp đồng xác định thời hạn 24 tháng' },
+                { value: 'Hợp đồng xác định thời hạn 36 tháng', text: 'Hợp đồng xác định thời hạn 36 tháng' },
+                { value: 'Hợp đồng thử việc', text: 'Hợp đồng thử việc' }
+            ],
+            idIssuePlace: [
+                { value: '', text: 'Chọn' },
+                { value: 'Cục Cảnh sát Quản lý Hành chính về Trật tự Xã hội', text: 'Cục Cảnh sát QLHC về TTXH' },
+                { value: 'Công an TP Hà Nội', text: 'Công an TP Hà Nội' },
+                { value: 'Công an TP Hồ Chí Minh', text: 'Công an TP Hồ Chí Minh' },
+                { value: 'Công an TP Đà Nẵng', text: 'Công an TP Đà Nẵng' },
+                { value: 'Công an tỉnh Thanh Hóa', text: 'Công an tỉnh Thanh Hóa' }
+            ],
+            bankName: [
+                { value: '', text: 'Chọn' },
+                { value: 'Ngân hàng TMCP Ngoại Thương Việt Nam', text: 'Vietcombank' },
+                { value: 'Ngân hàng TMCP Công Thương Việt Nam', text: 'VietinBank' },
+                { value: 'Ngân hàng TMCP Đầu tư và Phát triển Việt Nam', text: 'BIDV' },
+                { value: 'Ngân hàng Nông nghiệp và Phát triển Nông thôn', text: 'Agribank' },
+                { value: 'Ngân hàng TMCP Á Châu', text: 'ACB' },
+                { value: 'Ngân hàng TMCP Sài Gòn Thương Tín', text: 'Sacombank' },
+                { value: 'Ngân hàng TMCP Kỹ Thương Việt Nam', text: 'Techcombank' }
+            ],
+            educationLevel: [
+                { value: '', text: 'Chọn' },
+                { value: 'Đại học', text: 'Đại học' },
+                { value: 'Thạc sĩ', text: 'Thạc sĩ' },
+                { value: 'Tiến sĩ', text: 'Tiến sĩ' },
+                { value: 'Cao đẳng', text: 'Cao đẳng' },
+                { value: 'Trung cấp', text: 'Trung cấp' },
+                { value: 'THPT', text: 'THPT' }
+            ],
+            hrGroup: [
+                { value: '', text: 'Chọn' },
+                { value: 'Khác', text: 'Khác' },
+                { value: 'Nhóm A', text: 'Nhóm A' },
+                { value: 'Nhóm B', text: 'Nhóm B' },
+                { value: 'Nhóm C', text: 'Nhóm C' }
+            ],
+            managerId: [
+                { value: '', text: 'Chọn', name: '', email: '' },
+                { value: '02240044', text: '02240044 - Nguyễn Văn A', name: 'Nguyễn Văn A', email: 'nguyenvana@company.com' },
+                { value: '02240055', text: '02240055 - Trần Thị B', name: 'Trần Thị B', email: 'tranthib@company.com' },
+                { value: '02240066', text: '02240066 - Lê Văn C', name: 'Lê Văn C', email: 'levanc@company.com' },
+                { value: '02240077', text: '02240077 - Phạm Thị D', name: 'Phạm Thị D', email: 'phamthid@company.com' }
+            ],
+            shiftGroup: [
+                { value: '', text: 'Chọn' },
+                { value: 'Thứ 7 làm việc 4h', text: 'Thứ 7 làm việc 4h' },
+                { value: 'Thứ 7 làm việc 8h', text: 'Thứ 7 làm việc 8h' },
+                { value: 'Không làm thứ 7', text: 'Không làm thứ 7' }
+            ],
+            recruitmentType: [
+                { value: '', text: 'Chọn' },
+                { value: 'Tuyển mới', text: 'Tuyển mới' },
+                { value: 'Giới thiệu', text: 'Giới thiệu' },
+                { value: 'Headhunt', text: 'Headhunt' }
+            ],
+            applicationMethod: [
+                { value: '', text: 'Chọn' },
+                { value: 'Nộp hồ sơ trực tiếp', text: 'Nộp hồ sơ trực tiếp' },
+                { value: 'Qua email', text: 'Qua email' },
+                { value: 'Qua đại lý', text: 'Qua đại lý' }
+            ]
+        };
+
+        // Hàm populate select options
+        function populateSelect(selectId, data) {
+            const select = document.getElementById(selectId);
+            select.innerHTML = '';
+            
+            data.forEach(item => {
+                const option = document.createElement('option');
+                option.value = item.value;
+                option.textContent = item.text;
+                if (item.name) option.setAttribute('data-name', item.name);
+                if (item.email) option.setAttribute('data-email', item.email);
+                select.appendChild(option);
+            });
+        }
+
+        // Toggle fullscreen function
+        function toggleFullscreen() {
+            const container = document.querySelector('.container');
+            const icon = document.getElementById('resizeIcon');
+            
+            container.classList.toggle('fullscreen');
+            
+            if (container.classList.contains('fullscreen')) {
+                icon.classList.remove('fa-expand');
+                icon.classList.add('fa-compress');
+                document.body.style.padding = '0';
+            } else {
+                icon.classList.remove('fa-compress');
+                icon.classList.add('fa-expand');
+                document.body.style.padding = '10px';
+            }
+        }
+
+        $(document).ready(function() {
+            // Populate tất cả các select
+            Object.keys(selectData).forEach(key => {
+                populateSelect(key, selectData[key]);
+            });
+
+            // Initialize Select2 for all select elements
+            $('select').select2({
+                theme: 'default',
+                width: '100%',
+                placeholder: 'Chọn...',
+                allowClear: true,
+                minimumResultsForSearch: 6
+            });
+
+            // Initialize Flatpickr với format DD-MMM-YYYY (tiếng Anh)
+            const flatpickrOptions = {
+                dateFormat: 'd-M-Y',
+                allowInput: true,
+                disableMobile: true,
+                locale: {
+                    months: {
+                        shorthand: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+                        longhand: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
+                    },
+                    weekdays: {
+                        shorthand: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
+                        longhand: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
+                    }
+                }
+            };
+
+            // Initialize Flatpickr cho birthDate
+            flatpickr('#birthDate', {
+                ...flatpickrOptions,
+                maxDate: new Date(),
+                defaultDate: new Date('1990-01-01')
+            });
+
+            // Initialize Flatpickr cho startDate
+            flatpickr('#startDate', {
+                ...flatpickrOptions,
+                defaultDate: new Date()
+            });
+
+            // Initialize Flatpickr cho contractDate
+            flatpickr('#contractDate', {
+                ...flatpickrOptions,
+                defaultDate: new Date()
+            });
+
+            // Initialize Flatpickr cho idIssueDate
+            flatpickr('#idIssueDate', {
+                ...flatpickrOptions,
+                maxDate: new Date(),
+                defaultDate: new Date()
+            });
+
+            // Auto-fill manager information when selecting Manager ID
+            $('#managerId').on('change', function() {
+                const selectedOption = $(this).find('option:selected');
+                const managerName = selectedOption.data('name');
+                const managerEmail = selectedOption.data('email');
+                
+                if (managerName && managerEmail) {
+                    $('#hrManagerName').val(managerName);
+                    $('#managerEmail').val(managerEmail);
+                    
+                    // Hiển thị thông báo
+                    const Toast = Swal.mixin({
+                        toast: true,
+                        position: 'top-end',
+                        showConfirmButton: false,
+                        timer: 2000,
+                        timerProgressBar: true,
+                        didOpen: (toast) => {
+                            toast.addEventListener('mouseenter', Swal.stopTimer)
+                            toast.addEventListener('mouseleave', Swal.resumeTimer)
+                        }
+                    });
+                    
+                    Toast.fire({
+                        icon: 'success',
+                        title: 'Đã tự động điền thông tin quản lý'
+                    });
+                } else {
+                    $('#hrManagerName').val('');
+                    $('#managerEmail').val('');
+                }
+            });
+        });
+
+        function toggleSwitch(element) {
+            element.classList.toggle('active');
+        }
+
+        function resetForm() {
+            Swal.fire({
+                title: 'Xác nhận hủy?',
+                text: "Bạn có chắc muốn hủy các thay đổi không?",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#0575e6',
+                cancelButtonColor: '#e2e8f0',
+                confirmButtonText: 'Hủy bỏ',
+                cancelButtonText: 'Không',
+                customClass: {
+                    confirmButton: 'btn btn-primary',
+                    cancelButton: 'btn btn-secondary'
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    document.getElementById('employeeForm').reset();
+                    $('select').val(null).trigger('change');
+                    
+                    // Reset Flatpickr
+                    document.querySelectorAll('.date-input').forEach(input => {
+                        if (input._flatpickr) {
+                            input._flatpickr.clear();
+                        }
+                    });
+                    
+                    // Reset toggle switches
+                    document.querySelectorAll('.toggle').forEach(toggle => {
+                        toggle.classList.remove('active');
+                    });
+                    
+                    Swal.fire({
+                        title: 'Đã hủy!',
+                        text: 'Form đã được đặt lại.',
+                        icon: 'success',
+                        confirmButtonColor: '#0575e6',
+                        timer: 1000,
+                        showConfirmButton: false
+                    });
+                }
+            });
+        }
+
+        document.getElementById('employeeForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Show loading
+            Swal.fire({
+                title: 'Đang xử lý...',
+                allowOutsideClick: false,
+                showConfirmButton: false,
+                willOpen: () => {
+                    Swal.showLoading();
+                }
+            });
+
+            // Simulate API call
+            setTimeout(() => {
+                // Get form data
+                const formData = {
+                    employeeId: document.getElementById('employeeId').value,
+                    fullName: document.getElementById('fullName').value,
+                    birthDate: document.getElementById('birthDate').value,
+                    startDate: document.getElementById('startDate').value,
+                    status: $('#status').select2('data')[0]?.text || 'Chưa có'
+                };
+                
+                // Show success message
+                Swal.fire({
+                    title: 'Thành công!',
+                    html: `
+                        <div style="text-align: left; padding: 10px; font-size: 12px;">
+                            <p><strong>Mã số:</strong> ${formData.employeeId || '02170010'}</p>
+                            <p><strong>Họ tên:</strong> ${formData.fullName || 'Chưa có'}</p>
+                            <p><strong>Ngày sinh:</strong> ${formData.birthDate || 'Chưa có'}</p>
+                            <p><strong>Ngày vào:</strong> ${formData.startDate || 'Chưa có'}</p>
+                            <p><strong>Trạng thái:</strong> ${formData.status}</p>
+                        </div>
+                    `,
+                    icon: 'success',
+                    confirmButtonColor: '#0575e6',
+                    confirmButtonText: 'Đóng',
+                    showCloseButton: true,
+                    width: 350
+                });
+            }, 800);
+        });
+
+        // Auto-generate employee ID
+        function generateEmployeeId() {
+            const timestamp = Date.now().toString().slice(-8);
+            document.getElementById('employeeId').value = timestamp;
+        }
+
+        // Initialize on page load
+        window.onload = function() {
+            generateEmployeeId();
+        };
+
+        // Keyboard shortcut for fullscreen (F11)
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'F11') {
+                e.preventDefault();
+                toggleFullscreen();
+            }
+        });
+    </script>
+</body>
+</html>

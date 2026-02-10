@@ -14,6 +14,10 @@
     <!-- Flatpickr -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css" />
     
+    <link rel="stylesheet" href="https://cdn.datatables.net/2.3.4/css/dataTables.bootstrap5.min.css" />
+    <link rel="stylesheet" href="https://cdn.datatables.net/responsive/3.0.6/css/responsive.bootstrap5.min.css" />
+    <link rel="stylesheet" href="https://cdn.datatables.net/fixedcolumns/5.0.5/css/fixedColumns.bootstrap5.min.css" />
+
     <style>
         * {
             margin: 0;
@@ -28,21 +32,6 @@
             min-height: 100vh;
             position: relative;
             font-size: 13px;
-        }
-        
-        body::before {
-            content: '';
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: 
-                radial-gradient(circle at 20% 50%, rgba(0, 180, 216, 0.15), transparent 50%),
-                radial-gradient(circle at 80% 80%, rgba(0, 119, 182, 0.15), transparent 50%),
-                radial-gradient(circle at 40% 20%, rgba(3, 4, 94, 0.1), transparent 50%);
-            z-index: -1;
-            animation: gradientShift 15s ease infinite;
         }
         
         /* Fix Select2 z-index */
@@ -84,12 +73,6 @@
         .flatpickr-months .flatpickr-next-month:hover svg {
             fill: #ffffff;
         }
-        
-        @keyframes gradientShift {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.8; }
-        }
-
         .container {
             max-width: 1400px;
             margin: 0 auto;
@@ -101,16 +84,14 @@
             transition: all 0.3s ease;
         }
 
-        .container.fullscreen {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            max-width: 100vw;
-            margin: 0;
-            border-radius: 0;
-            z-index: 9999;
+        .modal-content.modal-fullscreen {
+            width: 98vw !important;
+            max-width: 98vw !important;
+            height: 98vh !important;
+            max-height: 98vh !important;
+            margin: 1vh auto !important;
+            border-radius: 8px !important;
+            transition: all 0.3s ease;
         }
 
         .header {
@@ -131,12 +112,14 @@
             gap: 10px;
         }
 
-        .header-buttons {
+
+        .modal-header-buttons {
             display: flex;
             gap: 8px;
+            align-items: center;
         }
 
-        .header-button {
+        .modal-header .header-button {
             background: rgba(255, 255, 255, 0.2);
             border: 1px solid rgba(255, 255, 255, 0.3);
             color: white;
@@ -152,7 +135,7 @@
             justify-content: center;
         }
 
-        .header-button:hover {
+        .modal-header .header-button:hover {
             background: rgba(255, 255, 255, 0.3);
             transform: scale(1.05);
         }
@@ -162,11 +145,34 @@
             padding: 20px;
         }
 
+        .top-sections-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        /* Điều chỉnh section-card trong container */
+        .top-sections-container .section-card {
+            margin-bottom: 0;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .top-sections-container .template-info,
+        .top-sections-container .import-controls {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
         .btn {
-            padding: 8px 15px;
+            padding: 6px 12px;
             border: none;
             border-radius: 5px;
-            font-size: 12px;
+            font-size: 11px;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.2s;
@@ -175,9 +181,9 @@
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            gap: 6px;
+            gap: 5px;
             white-space: nowrap;
-            min-height: 36px;
+            min-height: 32px;
         }
 
         .btn-primary {
@@ -233,16 +239,24 @@
         }
 
         .btn-sm {
-            padding: 5px 10px;
-            font-size: 11px;
-            min-height: 28px;
-            gap: 4px;
+            padding: 3px 8px;            
+            font-size: 10px;            
+            min-height: 24px;            
+            gap: 3px;                    
         }
 
+        /* Nút lớn - Nhỏ gọn hơn */
         .btn-lg {
-            padding: 12px 24px;
-            font-size: 14px;
-            min-height: 44px;
+            padding: 10px 20px;          
+            font-size: 13px;            
+            min-height: 40px;           
+        }
+
+        /* Nút trong header - Nhỏ gọn hơn */
+        .header-button {
+            width: 28px;                 
+            height: 28px;                
+            font-size: 14px;             
         }
 
         .btn-block {
@@ -254,22 +268,7 @@
         .table-wrapper {
             background: white;
             border-radius: 8px;
-            overflow-x: auto;
             box-shadow: 0 2px 8px rgba(102, 126, 234, 0.05);
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            min-width: 1200px;
-        }
-
-        thead {
-            background: linear-gradient(135deg, #0575e6 0%, #021b79 100%);
-            color: white;
-            position: sticky;
-            top: 0;
-            z-index: 10;
         }
 
         th {
@@ -278,12 +277,6 @@
             font-size: 12px;
             font-weight: 600;
             white-space: nowrap;
-        }
-
-        tbody tr {
-            border-bottom: 1px solid #e2e8f0;
-            transition: background 0.2s;
-            cursor: pointer;
         }
 
         tbody tr:hover {
@@ -298,6 +291,134 @@
             padding: 10px;
             font-size: 12px;
             color: #2d3748;
+        }
+
+        #employeeTable {
+            width: 100% !important;
+            font-size: 13px;
+            border-collapse: collapse !important;
+            border-spacing: 0 !important;
+        }
+
+        #employeeTable thead th {
+            position: sticky;
+            top: 0;
+            z-index: 2;
+            padding: 1px 10px !important;
+            font-size: 13px;
+            font-weight: 600;
+            white-space: nowrap;
+            vertical-align: middle;
+            background: #e2e8f0;
+            color: #2d3748;
+            border: 1px solid #cbd5e0;
+        }
+
+        #employeeTable tbody td {
+            padding: 1px 10px !important;
+            font-size: 12px;
+            white-space: nowrap;
+            vertical-align: middle;
+            line-height: 1;
+            border: 1px solid #cbd5e0;
+        }
+
+        #employeeTable tbody tr {
+            height: auto;
+            min-height: unset;
+        }
+
+        #employeeTable thead th::before,
+        #employeeTable thead th::after {
+            display: none !important;
+        }
+
+        /* Hàng lẻ - màu xám nhẹ */
+        #employeeTable tbody tr:nth-child(odd) {
+            background-color: #f8f9fa;
+        }
+
+        /* Hover vẫn giữ màu khác */
+        #employeeTable tbody tr:hover {
+            background-color: #f0f4ff !important;
+            cursor: pointer;
+        }
+
+        
+        /* Tối ưu các nút action */
+        #employeeTable tbody td:first-child {
+            padding: 1px 4px !important;
+            text-align: center;
+        }
+
+        #employeeTable tbody td:first-child .btn {
+            padding: 0px 5px;
+            font-size: 10px;
+            line-height: 1;
+            min-height: unset !important;
+            height: 18px;
+            width:24px;
+            border-radius: 3px;
+        }
+        #employeeTable tbody td:first-child .btn i {
+            font-size: 9px;
+        }
+
+        #employeeTable .btn {
+            min-height: unset !important;
+            line-height: 1;
+        }
+
+        /* DataTables wrapper tối ưu */
+        .dataTables_wrapper {
+            padding: 0;
+        }
+
+        /* Scrollbar tùy chỉnh */
+        /* Container scroll thực sự - CSS thuần, không DataTables */
+        .dataTables_wrapper {
+            overflow-x: auto;
+        }
+
+
+        /* Wrapper bọc bảng thực sự */
+        .dt-scroll-container {
+            max-height: 60vh;
+            overflow: auto;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+        }
+
+        .dt-scroll-container table {
+            min-width: 6000px; 
+        }
+
+        /* Sticky header bằng CSS */
+        .dt-scroll-container thead th {
+            position: sticky;
+            top: 0;
+            z-index: 3;
+            background: #e2e8f0 !important;
+        }
+
+
+        /* Scrollbar */
+        .dt-scroll-container::-webkit-scrollbar { height: 8px; width: 8px; }
+        .dt-scroll-container::-webkit-scrollbar-track { background: #f1f5f9; border-radius: 4px; }
+        .dt-scroll-container::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        .dt-scroll-container::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
+        /* Responsive cho màn hình nhỏ */
+        @media screen and (max-width: 1400px) {
+            #employeeTable {
+                font-size: 12px;
+            }
+            
+            #employeeTable thead th,
+            #employeeTable tbody td {
+                padding: 5px 8px !important;
+                font-size: 12px;
+            }
         }
 
         /* Modal */
@@ -331,7 +452,6 @@
             display: flex;
             flex-direction: column;
             position: relative; 
-            resize: both; 
             overflow: hidden; 
             min-width: 600px; 
             min-height: 400px;
@@ -347,40 +467,6 @@
                 transform: translateY(0);
                 opacity: 1;
             }
-        }
-
-        .resize-handle {
-            position: absolute;
-            width: 20px;
-            height: 20px;
-            right: 0;
-            bottom: 0;
-            cursor: nwse-resize;
-            background: linear-gradient(135deg, transparent 50%, #0575e6 50%);
-            border-radius: 0 0 10px 0;
-            z-index: 10;
-        }
-
-        .resize-handle::before {
-            content: '';
-            position: absolute;
-            right: 4px;
-            bottom: 4px;
-            width: 8px;
-            height: 8px;
-            border-right: 2px solid white;
-            border-bottom: 2px solid white;
-            opacity: 0.7;
-        }
-
-        /* Thêm style khi đang resize */
-        .modal-content.resizing {
-            transition: none;
-            user-select: none;
-        }
-
-        .modal-content.resizing * {
-            pointer-events: none;
         }
 
         .modal-header {
@@ -482,6 +568,11 @@
 
         .template-info {
             padding: 10px 0;
+        }
+
+        .template-info .btn {
+            width: auto;
+            align-self: flex-start;
         }
 
         .template-info p {
@@ -631,41 +722,6 @@
             }
         }
 
-        .search-wrapper {
-            position: relative;
-        }
-
-        .search-icon-custom {
-            position: absolute;
-            left: 12px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: #64748b;
-            pointer-events: none;
-        }
-
-        .search-wrapper input {
-            width: 100%;
-            padding: 10px 12px 10px 40px;
-            border: 2px solid #cbd5e0;
-            border-radius: 5px;
-            font-size: 14px;
-            background: white;
-            transition: all 0.2s;
-        }
-
-        .search-wrapper input:focus {
-            outline: none;
-            border-color: #3b82f6;
-            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-        }
-
-        .table-container {
-            width: 100%;
-            overflow-x: auto;
-            -webkit-overflow-scrolling: touch;
-        }
-
         .button-group {
             display: flex;
             gap: 15px;
@@ -676,8 +732,8 @@
 
         .button-group .btn {
             flex: 1;
-            min-width: 200px;
-            max-width: 320px;
+            min-width: 80px;
+            max-width: 128px;
         }
 
         .btn-lg {
@@ -877,54 +933,55 @@
         /* Responsive */
         /* Responsive Styles Tổng Hợp */
 
-/* Large devices (desktops, less than 1200px) */
-@media (max-width: 1200px) {
-    .form-grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
-    
-    .toggle-section {
-        grid-template-columns: repeat(3, 1fr);
-    }
+        /* Large devices (desktops, less than 1200px) */
+        @media (max-width: 1200px) {
+            .form-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .toggle-section {
+                grid-template-columns: repeat(3, 1fr);
+            }
 
-    .modal-content {
-        width: 98%;
-        max-width: 98%;
-    }
-}
+            .modal-content {
+                width: 98%;
+                max-width: 98%;
+            }
+        }
 
-/* Medium devices (tablets, less than 1024px) */
-@media (max-width: 1024px) {
-    .btn {
-        padding: 7px 12px;
-        font-size: 11px;
-        gap: 5px;
-        min-height: 34px;
-    }
+        /* Medium devices (tablets, less than 1024px) */
+        @media (max-width: 1024px) {
+            .btn {
+                padding: 7px 12px;
+                font-size: 11px;
+                gap: 5px;
+                min-height: 34px;
+            }
 
-    .btn-sm {
-        padding: 4px 8px;
-        font-size: 10px;
-        min-height: 26px;
-        gap: 3px;
-    }
+            .btn-sm {
+                padding: 4px 8px;
+                font-size: 10px;
+                min-height: 26px;
+                gap: 3px;
+            }
 
-    .btn-lg {
-        padding: 10px 20px;
-        font-size: 13px;
-        min-height: 40px;
-    }
+            .btn-lg {
+                padding: 4px 10px !important;          
+                font-size: 11px !important;            
+                min-height: 28px !important;
+                gap: 3px !important; 
+            }
 
-    /* Điều chỉnh button group */
-    .button-group {
-        gap: 12px;
-    }
+            /* Điều chỉnh button group */
+            .button-group {
+                gap: 12px;
+            }
 
-    .button-group .btn {
-        min-width: 180px;
-        max-width: 280px;
-    }
-}
+            .button-group .btn {
+                min-width: 80px;
+                max-width: 128px;
+            }
+        }
 
 /* Small devices (landscape phones, less than 768px) */
 @media (max-width: 768px) {
@@ -941,14 +998,13 @@
         font-size: 16px;
     }
 
-    .header-button {
-        width: 28px;
-        height: 28px;
-        font-size: 14px;
-    }
-
     .table-section {
         padding: 10px;
+    }
+
+    .top-sections-container {
+        grid-template-columns: 1fr;
+        gap: 12px;
     }
 
     .section-card {
@@ -1010,22 +1066,15 @@
         gap: 8px;
     }
 
-    /* Modal responsive cho mobile */
     .modal-content {
-        width: 100%;
-        margin: 0;
-        max-height: 100vh;
-        border-radius: 0;
-        min-width: unset !important;
-        height: 100vh !important;
-        resize: none !important;
-        max-width: 100% !important;
-    }
-    
-    /* Ẩn resize handle trên mobile */
-    .resize-handle {
-        display: none;
-    }
+    width: 100%;
+    margin: 0;
+    max-height: 100vh;
+    border-radius: 0;
+    min-width: unset !important;
+    height: 100vh !important;
+    max-width: 100% !important;
+}
 
     .modal-header {
         padding: 15px;
@@ -1079,20 +1128,11 @@
     }
 
     .button-group .btn {
-        width: 100%;
-        max-width: 100%;
+        width: 50%;
+        max-width: 80%;
         min-width: auto;
     }
 
-    /* Header buttons */
-    .header-button {
-        width: 30px;
-        height: 30px;
-        font-size: 14px;
-        padding: 4px;
-    }
-
-    /* Modal footer buttons */
     .modal-footer {
         flex-direction: column-reverse;
         padding: 12px 15px;
@@ -1103,7 +1143,6 @@
         width: 100%;
     }
 
-    /* Upload actions */
     .upload-actions {
         flex-direction: column;
         gap: 8px;
@@ -1122,7 +1161,6 @@
         font-size: 11px;
     }
     
-    /* Giảm padding section card cho mobile */
     .section-card {
         padding: 10px;
         margin-bottom: 10px;
@@ -1198,14 +1236,6 @@
     /* Ẩn text trên nút nhỏ, chỉ giữ icon */
     .btn-sm span.btn-text {
         display: none;
-    }
-
-    /* Header buttons nhỏ hơn */
-    .header-button {
-        width: 28px;
-        height: 28px;
-        font-size: 13px;
-        padding: 3px;
     }
 
     .header-buttons {
@@ -1307,96 +1337,84 @@
         height: 28px;
     }
 }
+
+    .btn-success.btn-block,
+    .section-card .btn-success,
+    .button-group .btn {
+        padding: 4px 10px !important;
+        font-size: 11px !important;
+        min-height: 28px !important;
+    }
+
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
             <h1><i class="fas fa-users"></i> Quản Lý Nhân Sự</h1>
-            <div class="header-buttons">
-                <button class="header-button" onclick="toggleFullscreen()" title="Phóng to/Thu nhỏ">
-                    <i class="fas fa-expand" id="resizeIcon"></i>
-                </button>
-                <button class="header-button" onclick="window.close()" title="Đóng">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
         </div>
 
         <div class="table-section">
-            <!-- Tải template -->
-            <div class="section-card">
-                <div class="card-header-custom">
-                    <div class="card-icon success">
-                        <i class="fas fa-file-download"></i>
+            <div class="top-sections-container">
+                    <div class="section-card">
+                    <div class="card-header-custom">
+                        <div class="card-icon success">
+                            <i class="fas fa-file-download"></i>
+                        </div>
+                        <h3>Tải file Excel mẫu</h3>
                     </div>
-                    <h3>Tải file Excel mẫu</h3>
+                    <div class="template-info">
+                        <p>Tải file mẫu để điền thông tin, sau đó import vào hệ thống</p>
+                        <button class="btn btn-success" onclick="downloadTemplate()">
+                            <i class="fas fa-download"></i> Tải Template Excel
+                        </button>
+                    </div>
                 </div>
-                <div class="template-info">
-                    <p>Tải file mẫu để điền thông tin, sau đó import vào hệ thống</p>
-                    <button class="btn btn-success btn-block" onclick="downloadTemplate()">
-                        <i class="fas fa-download"></i> Tải Template Excel
-                    </button>
-                </div>
-            </div>
 
-            <!-- Upload và import Excel -->
-            <div class="section-card">
-                <div class="card-header-custom">
-                    <div class="card-icon info">
-                        <i class="fas fa-file-excel"></i>
-                    </div>
-                    <h3>Import từ Excel</h3>
-                </div>
-                <div class="import-controls">
-                    <div class="file-input-wrapper">
-                        <label for="excelFileInput" class="custom-file-upload" id="fileUploadArea">
-                            <div class="file-upload-content">
-                                <div class="file-upload-icon-large">
-                                    <i class="fas fa-cloud-upload-alt"></i>
-                                </div>
-                                <div class="file-upload-text-large">
-                                    <strong>Chọn file Excel hoặc kéo thả vào đây</strong>
-                                    <span>Hỗ trợ: .xlsx, .xls</span>
-                                </div>
-                            </div>
-                        </label>
-                        <input type="file" id="excelFileInput" accept=".xlsx, .xls" style="display: none;" onchange="handleFileSelect(event)">
-                        
-                        <div class="file-name-display" id="fileNameDisplay">
+                <!-- Upload và import Excel -->
+                <div class="section-card">
+                    <div class="card-header-custom">
+                        <div class="card-icon info">
                             <i class="fas fa-file-excel"></i>
-                            <span id="fileName">Chưa có file</span>
-                            <button type="button" onclick="clearFileSelection()" title="Xóa file">
-                                <i class="fas fa-times"></i>
-                            </button>
                         </div>
+                        <h3>Import từ Excel</h3>
+                    </div>
+                    <div class="import-controls">
+                        <div class="file-input-wrapper">
+                            <label for="excelFileInput" class="custom-file-upload" id="fileUploadArea">
+                                <div class="file-upload-content">
+                                    <div class="file-upload-icon-large">
+                                        <i class="fas fa-cloud-upload-alt"></i>
+                                    </div>
+                                    <div class="file-upload-text-large">
+                                        <strong>Chọn file Excel hoặc kéo thả vào đây</strong>
+                                        <span>Hỗ trợ: .xlsx, .xls</span>
+                                    </div>
+                                </div>
+                            </label>
+                            <input type="file" id="excelFileInput" accept=".xlsx, .xls" style="display: none;" onchange="handleFileSelect(event)">
+                            
+                            <div class="file-name-display" id="fileNameDisplay">
+                                <i class="fas fa-file-excel"></i>
+                                <span id="fileName">Chưa có file</span>
+                                <button type="button" onclick="clearFileSelection()" title="Xóa file">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </div>
 
-                        <div class="upload-actions">
-                            <button class="btn btn-success" onclick="importExcel()" id="importBtn" >
-                                <i class="fas fa-upload"></i> Upload & Import
-                            </button>
+                            <div class="upload-actions">
+                                <button class="btn btn-success" onclick="importExcel()" id="importBtn" >
+                                    <i class="fas fa-upload"></i> Upload & Import
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-
-            <!-- Tìm kiếm -->
-            <div class="section-card">
-                <div class="card-header-custom">
-                    <div class="card-icon primary">
-                        <i class="fas fa-search"></i>
-                    </div>
-                    <h3>Tìm kiếm</h3>
-                </div>
-                <div class="search-wrapper">
-                    <i class="fas fa-search search-icon-custom"></i>
-                    <input type="text" id="searchInput" placeholder="Nhập mã NV, họ tên, email, số điện thoại..." onkeyup="searchTable()">
-                </div>
-            </div>
-
+            
             <!-- Table -->
             <div class="table-wrapper">
-                <div class="table-container">
+                <div class="dt-scroll-container" id="dtScrollContainer">
                     <table id="employeeTable">
                         <thead>
                             <tr>
@@ -1421,6 +1439,34 @@
                                 <th style="width: 150px;">Số BHXH</th>
                                 <th style="width: 150px;">Mã QL trực tiếp</th>
                                 <th style="width: 180px;">Tên QL trực tiếp</th>
+                                <th style="width: 150px;">Email QL</th>
+                                <th style="width: 120px;">Dân tộc</th>
+                                <th style="width: 100px;">Tôn giáo</th>
+                                <th style="width: 250px;">Địa chỉ</th>
+                                <th style="width: 120px;">CV Thực tế</th>
+                                <th style="width: 150px;">Thời hạn HĐ</th>
+                                <th style="width: 120px;">Ngày hết hạn HĐ</th>
+                                <th style="width: 120px;">Ngày cấp CCCD</th>
+                                <th style="width: 200px;">Nơi cấp CCCD</th>
+                                <th style="width: 130px;">Mã số TNCN</th>
+                                <th style="width: 130px;">Mã số BHYT</th>
+                                <th style="width: 200px;">Tên ngân hàng</th>
+                                <th style="width: 150px;">Số tài khoản</th>
+                                <th style="width: 120px;">Trình độ</th>
+                                <th style="width: 150px;">Chuyên ngành</th>
+                                <th style="width: 180px;">Trường học</th>
+                                <th style="width: 100px;">Năm TN</th>
+                                <th style="width: 130px;">Nhóm QL</th>
+                                <th style="width: 100px;">Chấm công</th>
+                                <th style="width: 120px;">Đi trễ/về sớm</th>
+                                <th style="width: 80px;">Tăng ca</th>
+                                <th style="width: 80px;">Nghỉ bù</th>
+                                <th style="width: 100px;">NS chủ chốt</th>
+                                <th style="width: 150px;">Nguồn tuyển dụng</th>
+                                <th style="width: 130px;">Hình thức TD</th>
+                                <th style="width: 150px;">Liên hệ khẩn cấp</th>
+                                <th style="width: 130px;">SĐT khẩn cấp</th>
+                                <th style="width: 200px;">Ghi chú</th>
                             </tr>
                         </thead>
                         <tbody id="tableBody">
@@ -1447,7 +1493,14 @@
         <div class="modal-content" id="modalContent">
             <div class="modal-header">
                 <h2 id="modalTitle"><i class="fas fa-user-plus"></i> Thêm nhân viên mới</h2>
-                <span class="close" onclick="closeEmployeeModal()">&times;</span>
+                <div class="modal-header-buttons">
+                    <button class="header-button" onclick="toggleFullscreen()" title="Phóng to/Thu nhỏ">
+                        <i class="fas fa-expand" id="resizeIcon"></i>
+                    </button>
+                    <button class="header-button" onclick="closeModal()" title="Đóng">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
             </div>
             <div class="modal-body">
                 <form id="employeeForm">
@@ -1723,7 +1776,7 @@
                     <i class="fas fa-save"></i> Lưu
                 </button>
             </div>
-        <div class="resize-handle" id="resizeHandle"></div>
+        
         </div>
     </div>
 
@@ -1734,14 +1787,24 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <!-- Thêm Bootstrap CSS nếu chưa có -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Thêm các script DataTables (THÊM ĐOẠN NÀY) -->
+    <script src="https://cdn.datatables.net/2.3.4/js/dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/2.3.4/js/dataTables.bootstrap5.min.js"></script>
+    <script src="https://cdn.datatables.net/responsive/3.0.6/js/dataTables.responsive.min.js"></script>
+    <script src="https://cdn.datatables.net/responsive/3.0.6/js/responsive.bootstrap5.min.js"></script>
+    <script src="https://cdn.datatables.net/fixedcolumns/5.0.5/js/dataTables.fixedColumns.min.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     <script>
         // Global variables
         let employees = [];
         let selectedFile = null;
         let flatpickrInstances = {};
-        let isResizing = false;
-        let currentModal = null;
-        let startX, startY, startWidth, startHeight;
 
         // Select data
         const selectData = {
@@ -1884,83 +1947,151 @@
                 dropdownParent: $('#employeeModal')
             });
 
+            $('#empCode').on('blur', function() {
+                const empCode = $(this).val().trim();
+                const index = $('#employeeIndex').val();
+                
+                if (empCode === '') return; // Bỏ qua nếu chưa nhập
+                
+                const isDuplicate = employees.some((emp, idx) => {
+                    if (index !== '' && parseInt(index) === idx) {
+                        return false;
+                    }
+                    return emp.empCode === empCode;
+                });
+                
+                if (isDuplicate) {
+                    // Tô đỏ viền ô input
+                    $(this).css('border-color', '#ef4444');
+                    $(this).css('background-color', '#fee2e2');
+                    
+                    // Hiển thị cảnh báo nhỏ
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Mã nhân viên đã tồn tại!',
+                        text: `Mã ${empCode} đã được sử dụng`,
+                        toast: true,
+                        position: 'top-end',
+                        showConfirmButton: false,
+                        timer: 3000,
+                        timerProgressBar: true
+                    });
+                } else {
+                    // Reset màu bình thường
+                    $(this).css('border-color', '#cbd5e0');
+                    $(this).css('background-color', 'white');
+                }
+            });
+
             // Manager change event
             $('#managerId').on('change', function() {
                 const selectedOption = $(this).find('option:selected');
                 $('#managerName').val(selectedOption.data('name') || '');
                 $('#managerEmail').val(selectedOption.data('email') || '');
             });
-            // Initialize resize functionality (THÊM DÒNG NÀY)
-            initializeResize(); 
 
             // Drag and drop for file upload
             setupDragDrop();
 
             // Load sample data
             loadSampleData();
+
+            // Initialize DataTable
+            initializeDataTable();
         });
 
-        function initializeResize() {
-            const resizeHandle = document.getElementById('resizeHandle');
-            const modalContent = document.getElementById('modalContent');
-            
-            if (!resizeHandle || !modalContent) return;
-            
-            resizeHandle.addEventListener('mousedown', function(e) {
-                e.preventDefault();
-                e.stopPropagation();
-                
-                isResizing = true;
-                currentModal = modalContent;
-                
-                startX = e.clientX;
-                startY = e.clientY;
-                startWidth = parseInt(window.getComputedStyle(modalContent).width, 10);
-                startHeight = parseInt(window.getComputedStyle(modalContent).height, 10);
-                
-                modalContent.classList.add('resizing');
-                document.body.style.cursor = 'nwse-resize';
-                
-                document.addEventListener('mousemove', doResize);
-                document.addEventListener('mouseup', stopResize);
+        function initializeDataTable() {
+            if (typeof $.fn.DataTable === 'undefined') {
+                console.error('DataTables chưa được load');
+                return;
+            }
+
+            if ($.fn.DataTable.isDataTable('#employeeTable')) {
+                $('#employeeTable').DataTable().destroy();
+                $('#employeeTable thead').find('tr:not(:first)').remove();
+            }
+
+            window.dataTable = $('#employeeTable').DataTable({
+                responsive: false,
+                paging: false,
+                language: {
+                    search: "Tìm kiếm:",
+                    info: "Hiển thị _TOTAL_ nhân viên",
+                    infoEmpty: "Không có dữ liệu",
+                    infoFiltered: "(lọc từ _MAX_ tổng số nhân viên)",
+                    emptyTable: "Chưa có dữ liệu nhân viên. Vui lòng thêm mới hoặc import từ Excel."
+                },
+                columnDefs: [
+                    { orderable: false, targets: '_all' },
+                    { orderable: false, targets: 0, width: '60px' },
+                    { width: '100px', targets: 1 },
+                    { width: '180px', targets: 2 },
+                    { width: '70px',  targets: 3 },
+                    { width: '100px', targets: 4 },
+                    { width: '130px', targets: 5 },
+                    { width: '200px', targets: 6 },
+                    { width: '180px', targets: 7 },
+                    { width: '110px', targets: 8 },
+                    { width: '200px', targets: 9 },
+                    { width: '100px', targets: 10 },
+                    { width: '100px', targets: 11 },
+                    { width: '100px', targets: 12 },
+                    { width: '120px', targets: 13 },
+                    { width: '150px', targets: 14 },
+                    { width: '150px', targets: 15 },
+                    { width: '100px', targets: 16 },
+                    { width: '120px', targets: 17 },
+                    { width: '120px', targets: 18 },
+                    { width: '100px', targets: 19 },
+                    { width: '180px', targets: 20 },
+                    { width: '150px', targets: 21 },
+                    { width: '120px', targets: 22 },
+                    { width: '100px', targets: 23 },
+                    { width: '250px', targets: 24 },
+                    { width: '120px', targets: 25 },
+                    { width: '150px',  targets: 26 },
+                    { width: '120px',  targets: 27 },
+                    { width: '120px', targets: 28 },
+                    { width: '200px', targets: 29 },
+                    { width: '130px', targets: 30 },
+                    { width: '130px', targets: 31 },
+                    { width: '200px', targets: 32 },
+                    { width: '150px', targets: 33 },
+                    { width: '120px', targets: 34 },
+                    { width: '150px', targets: 35 },
+                    { width: '180px', targets: 36 },
+                    { width: '100px', targets: 37 },
+                    { width: '130px', targets: 38 },
+                    { width: '100px', targets: 39 },
+                    { width: '120px', targets: 40 },
+                    { width: '80px', targets: 41 },
+                    { width: '80px', targets: 42 },
+                    { width: '100px', targets: 43 },
+                    { width: '150px', targets: 44 },
+                    { width: '130px', targets: 45 },
+                    { width: '150px', targets: 46 },
+                    { width: '130px', targets: 47 },
+                    { width: '200px', targets: 48 },
+                ],
+                autoWidth: false,
+                dom: '<"row"<"col-sm-12 col-md-6"><"col-sm-12 col-md-6"f>>' +
+                    '<"row"<"col-sm-12"tr>>' +
+                    '<"row"<"col-sm-12 col-md-5"i>>',
+                drawCallback: function() {
+                    // Gắn click mở modal khi click vào row (trừ nút xóa)
+                    $('#employeeTable tbody').off('click', 'tr').on('click', 'tr', function(e) {
+                        if ($(e.target).closest('button').length > 0) return;
+                        const rowData = window.dataTable.row(this).data();
+                        if (!rowData) return;
+                        // Tìm index trong mảng employees theo empCode (cột 1)
+                        const empCode = rowData[1];
+                        const idx = employees.findIndex(emp => emp.empCode === empCode);
+                        if (idx !== -1) openEmployeeModal('edit', idx);
+                    });
+                }
             });
-        }
-
-        function doResize(e) {
-            if (!isResizing || !currentModal) return;
+        
             
-            const width = startWidth + (e.clientX - startX);
-            const height = startHeight + (e.clientY - startY);
-            
-            // Giới hạn kích thước tối thiểu và tối đa
-            const minWidth = 600;
-            const minHeight = 400;
-            const maxWidth = window.innerWidth * 0.95;
-            const maxHeight = window.innerHeight * 0.95;
-            
-            if (width >= minWidth && width <= maxWidth) {
-                currentModal.style.width = width + 'px';
-            }
-            
-            if (height >= minHeight && height <= maxHeight) {
-                currentModal.style.height = height + 'px';
-                currentModal.style.maxHeight = height + 'px';
-            }
-        }
-
-        function stopResize() {
-            if (!isResizing) return;
-            
-            isResizing = false;
-            document.body.style.cursor = '';
-            
-            if (currentModal) {
-                currentModal.classList.remove('resizing');
-                currentModal = null;
-            }
-            
-            document.removeEventListener('mousemove', doResize);
-            document.removeEventListener('mouseup', stopResize);
         }
 
         function populateSelect(selectId, data) {
@@ -1979,19 +2110,23 @@
         }
 
         function toggleFullscreen() {
-            const container = document.querySelector('.container');
+            const modal = document.getElementById('employeeModal');
+            const modalContent = document.getElementById('modalContent');
             const icon = document.getElementById('resizeIcon');
             
-            container.classList.toggle('fullscreen');
-            
-            if (container.classList.contains('fullscreen')) {
-                icon.classList.remove('fa-expand');
-                icon.classList.add('fa-compress');
-                document.body.style.padding = '0';
-            } else {
-                icon.classList.remove('fa-compress');
-                icon.classList.add('fa-expand');
-                document.body.style.padding = '10px';
+            // Chỉ toggle khi modal đang mở
+            if (modal && modal.style.display === 'block') {
+                modalContent.classList.toggle('modal-fullscreen');
+                
+                if (modalContent.classList.contains('modal-fullscreen')) {
+                    // Phóng to modal
+                    icon.classList.remove('fa-expand');
+                    icon.classList.add('fa-compress');
+                } else {
+                    // Thu nhỏ modal
+                    icon.classList.remove('fa-compress');
+                    icon.classList.add('fa-expand');
+                }
             }
         }
 
@@ -2003,9 +2138,14 @@
             const modal = document.getElementById('employeeModal');
             const modalTitle = document.getElementById('modalTitle');
             const modalContent = document.getElementById('modalContent');
-            modalContent.style.width = '';
-            modalContent.style.height = '';
-            modalContent.style.maxHeight = '95vh';
+            const icon = document.getElementById('resizeIcon');
+            
+            modalContent.classList.remove('modal-fullscreen');
+            if (icon) {
+                icon.classList.remove('fa-compress');
+                icon.classList.add('fa-expand');
+            }
+
             // Destroy all existing flatpickr instances
             destroyAllDatePickers();
             
@@ -2101,6 +2241,15 @@
             destroyAllDatePickers();
         }
 
+        function closeModal() {
+            const modal = document.getElementById('employeeModal');
+            if (modal && modal.style.display === 'block') {
+                closeEmployeeModal();
+            } else {
+                window.close();
+            }
+        }
+
         function loadEmployeeData(index) {
             const emp = employees[index];
             document.getElementById('employeeIndex').value = index;
@@ -2182,6 +2331,31 @@
                 return;
             }
             
+            const index = document.getElementById('employeeIndex').value;
+            
+            // KIỂM TRA TRÙNG MÃ NHÂN VIÊN
+            const isDuplicate = employees.some((emp, idx) => {
+                // Nếu đang edit, bỏ qua chính nhân viên đó
+                if (index !== '' && parseInt(index) === idx) {
+                    return false;
+                }
+                return emp.empCode === empCode;
+            });
+            
+            if (isDuplicate) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Mã nhân viên đã tồn tại!',
+                    html: `Mã nhân viên <strong>${empCode}</strong> đã được sử dụng.<br>Vui lòng nhập mã khác.`,
+                    confirmButtonColor: '#0575e6',
+                    confirmButtonText: 'Đã hiểu'
+                });
+                // Focus vào ô mã nhân viên để người dùng sửa
+                document.getElementById('empCode').focus();
+                document.getElementById('empCode').select();
+                return;
+            }
+            
             const employee = {
                 empCode: empCode,
                 fullName: fullName,
@@ -2233,8 +2407,6 @@
                 note: document.getElementById('note').value
             };
             
-            const index = document.getElementById('employeeIndex').value;
-            
             if (index === '') {
                 employees.push(employee);
                 Swal.fire({
@@ -2284,61 +2456,73 @@
         }
 
         function renderTable() {
-            const tbody = document.getElementById('tableBody');
-            tbody.innerHTML = '';
-            
-            if (employees.length === 0) {
-                const row = document.createElement('tr');
-                row.innerHTML = `<td colspan="21" style="text-align: center; padding: 30px; color: #64748b;">Chưa có dữ liệu nhân viên. Vui lòng thêm mới hoặc import từ Excel.</td>`;
-                tbody.appendChild(row);
-                return;
+            if (!window.dataTable) {
+                initializeDataTable();
             }
-            
-            employees.forEach((emp, index) => {
-                const row = document.createElement('tr');
-                row.onclick = function() { openEmployeeModal('edit', index); };
-                
-                const displayValue = (value) => value || '';
-                
-                row.innerHTML = `
-                    <td onclick="event.stopPropagation();">
-                        <button class="btn btn-danger btn-sm" onclick="deleteEmployee(${index})" title="Xóa">
-                            <i class="fas fa-trash"></i>
-                        </button>
-                    </td>
-                    <td>${displayValue(emp.empCode)}</td>
-                    <td>${displayValue(emp.fullName)}</td>
-                    <td>${displayValue(emp.gender)}</td>
-                    <td>${displayValue(emp.birthDate)}</td>
-                    <td>${displayValue(emp.position)}</td>
-                    <td>${displayValue(emp.jobTitle)}</td>
-                    <td>${displayValue(emp.department)}</td>
-                    <td>${displayValue(emp.phone)}</td>
-                    <td>${displayValue(emp.email)}</td>
-                    <td>${displayValue(emp.startDate)}</td>
-                    <td>${displayValue(emp.workplace)}</td>
-                    <td>${displayValue(emp.employmentType)}</td>
-                    <td>${displayValue(emp.status)}</td>
-                    <td>${displayValue(emp.shiftGroup)}</td>
-                    <td>${displayValue(emp.contractNumber)}</td>
-                    <td>${displayValue(emp.contractDate)}</td>
-                    <td>${displayValue(emp.idNumber)}</td>
-                    <td>${displayValue(emp.socialInsurance)}</td>
-                    <td>${displayValue(emp.managerId)}</td>
-                    <td>${displayValue(emp.managerName)}</td>
-                `;
-                tbody.appendChild(row);
-            });
-        }
 
-        function searchTable() {
-            const input = document.getElementById('searchInput').value.toLowerCase();
-            const rows = document.querySelectorAll('#tableBody tr');
-            
-            rows.forEach(row => {
-                const text = row.textContent.toLowerCase();
-                row.style.display = text.includes(input) ? '' : 'none';
+            window.dataTable.clear();
+
+            employees.forEach((emp, index) => {
+                const v = (val) => (val !== null && val !== undefined && val !== '') ? val : 'Không có dữ liệu';
+                const b = (val) => val ? 'TRUE' : 'FALSE';  
+                const deleteBtn = `<button class="btn btn-danger btn-sm" 
+                    onclick="event.stopPropagation(); deleteEmployee(${index});" title="Xóa">
+                    <i class="fas fa-trash"></i></button>`;
+
+                window.dataTable.row.add([
+                    deleteBtn,
+                    v(emp.empCode),
+                    v(emp.fullName),
+                    v(emp.gender),
+                    v(emp.birthDate),
+                    v(emp.position),
+                    v(emp.jobTitle),
+                    v(emp.department),
+                    v(emp.phone),
+                    v(emp.email),
+                    v(emp.startDate),
+                    v(emp.workplace),
+                    v(emp.employmentType),
+                    v(emp.status),
+                    v(emp.shiftGroup),
+                    v(emp.contractNumber),
+                    v(emp.contractDate),
+                    v(emp.idNumber),
+                    v(emp.socialInsurance),
+                    v(emp.managerId),
+                    v(emp.managerName),
+                    v(emp.managerEmail),
+                    v(emp.ethnicity),
+                    v(emp.religion),
+                    v(emp.address),
+                    v(emp.actualJob),
+                    v(emp.contractType),
+                    v(emp.contractEndDate),
+                    v(emp.idIssueDate),
+                    v(emp.idIssuePlace),
+                    v(emp.taxCode),
+                    v(emp.healthInsurance),
+                    v(emp.bankName),
+                    v(emp.bankAccount),
+                    v(emp.educationLevel),
+                    v(emp.major),
+                    v(emp.school),
+                    v(emp.graduationYear),
+                    v(emp.managementGroup),
+                    b(emp.checkAttendance),
+                    b(emp.checkLateness),
+                    b(emp.checkOvertime),
+                    b(emp.checkCompensation),
+                    b(emp.keyStaff),
+                    v(emp.applicationMethod),
+                    v(emp.recruitmentType),
+                    v(emp.emergencyContact),
+                    v(emp.emergencyPhone),
+                    v(emp.note)
+                ]);
             });
+
+            window.dataTable.draw();
         }
 
         function downloadTemplate() {
@@ -2873,8 +3057,13 @@
                                 checkCompensation: parseBooleanValue(row['Quyền kiểm tra nghỉ bù']),
                                 keyStaff: parseBooleanValue(row['Nhân sự chủ chốt'])
                             };
-                            employees.push(employee);
-                            imported++;
+                            const isDuplicate = employees.some(emp => emp.empCode === employee.empCode);
+                            if (!isDuplicate) {
+                                employees.push(employee);
+                                imported++;
+                            } else {
+                                console.warn(`Bỏ qua nhân viên trùng mã: ${employee.empCode} - ${employee.fullName}`);
+                            }
                         }
                     });
                     

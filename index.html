@@ -410,58 +410,22 @@
         }
 
         /* Responsive cho tablet */
-        /* Responsive Styles Tổng Hợp */
-
-/* Large devices (desktops, less than 1200px) */
-@media (max-width: 1200px) {
-    .form-grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
-    
-    .toggle-section {
-        grid-template-columns: repeat(3, 1fr);
-    }
-
-    .modal-content {
-        width: 98%;
-        max-width: 98%;
-    }
-}
-
-/* Medium devices (tablets, less than 1024px) */
         @media (max-width: 1024px) {
-            .btn {
-                padding: 7px 12px;
-                font-size: 11px;
-                gap: 5px;
-                min-height: 34px;
+            .form-grid {
+                grid-template-columns: repeat(2, 1fr);
             }
-
-            .btn-sm {
-                padding: 4px 8px;
-                font-size: 10px;
-                min-height: 26px;
-                gap: 3px;
-            }
-
-            .btn-lg {
-                padding: 10px 20px;
-                font-size: 13px;
-                min-height: 40px;
-            }
-
-            /* Điều chỉnh button group */
-            .button-group {
+            
+            .toggle-section {
+                grid-template-columns: repeat(3, 1fr);
                 gap: 12px;
             }
-
-            .button-group .btn {
-                min-width: 180px;
-                max-width: 280px;
+            
+            .form-group label {
+                width: 100px;
             }
         }
 
-        /* Small devices (landscape phones, less than 768px) */
+        /* Responsive cho mobile */
         @media (max-width: 768px) {
             body {
                 padding: 5px;
@@ -473,16 +437,10 @@
             }
 
             .header h1 {
-                font-size: 16px;
+                font-size: 18px;
             }
 
-            .header-button {
-                width: 28px;
-                height: 28px;
-                font-size: 14px;
-            }
-
-            .table-section {
+            .form-container {
                 padding: 10px;
             }
 
@@ -491,356 +449,127 @@
                 margin-bottom: 12px;
             }
 
-            .card-header-custom h3 {
+            .section-title {
                 font-size: 14px;
+                margin-bottom: 12px;
             }
 
-            .card-icon {
-                width: 35px;
-                height: 35px;
-                font-size: 16px;
-            }
-
-            .custom-file-upload {
-                padding: 25px 15px;
-            }
-
-            .file-upload-icon-large {
-                width: 50px;
-                height: 50px;
-                font-size: 24px;
-            }
-
-            .file-upload-text-large strong {
-                font-size: 14px;
-            }
-
-            .file-upload-text-large span {
-                font-size: 12px;
-            }
-
+            /* Mobile: 1 cột, label và input cùng hàng */
             .form-grid {
                 grid-template-columns: 1fr;
                 gap: 10px;
             }
-
-            .form-group {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 4px;
-            }
-
-            .form-group label {
-                width: 100%;
-            }
-
-            .form-group input,
-            .form-group select,
-            .form-group textarea {
-                width: 100%;
-            }
-
-            .toggle-section {
-                grid-template-columns: repeat(2, 1fr);
-                gap: 8px;
-            }
-
-            /* Modal responsive cho mobile */
-            .modal-content {
-                width: 100%;
-                margin: 0;
-                max-height: 100vh;
-                border-radius: 0;
-                min-width: unset !important;
-                height: 100vh !important;
-                resize: none !important;
-                max-width: 100% !important;
-            }
-            
-            /* Ẩn resize handle trên mobile */
-            .resize-handle {
-                display: none;
-            }
-
-            .modal-header {
-                padding: 15px;
-                border-radius: 0;
-            }
-
-            .modal-header h2 {
-                font-size: 16px;
-            }
-
-            .modal-body {
-                padding: 15px;
-                -webkit-overflow-scrolling: touch;
-            }
-
-            .section-title {
-                font-size: 14px;
-            }
-
-            .modal-footer {
-                flex-direction: column-reverse;
-                padding: 12px 15px;
-            }
-
-            .btn {
-                padding: 6px 10px;
-                font-size: 11px;
-                gap: 4px;
-                min-height: 32px;
-                letter-spacing: 0.2px;
-            }
-
-            .btn-sm {
-                padding: 4px 7px;
-                font-size: 10px;
-                min-height: 24px;
-                gap: 3px;
-            }
-
-            .btn-lg {
-                padding: 9px 16px;
-                font-size: 12px;
-                min-height: 38px;
-            }
-
-            /* Button group trở thành column */
-            .button-group {
-                flex-direction: column;
-                padding: 12px;
-                gap: 10px;
-            }
-
-            .button-group .btn {
-                width: 100%;
-                max-width: 100%;
-                min-width: auto;
-            }
-
-            /* Header buttons */
-            .header-button {
-                width: 30px;
-                height: 30px;
-                font-size: 14px;
-                padding: 4px;
-            }
-
-            /* Modal footer buttons */
-            .modal-footer {
-                flex-direction: column-reverse;
-                padding: 12px 15px;
-                gap: 8px;
-            }
-
-            .modal-footer .btn {
-                width: 100%;
-            }
-
-            /* Upload actions */
-            .upload-actions {
-                flex-direction: column;
-                gap: 8px;
-            }
-
-            .upload-actions .btn {
-                width: 100%;
-            }
-
-            .table-container {
-                font-size: 11px;
-            }
-
-            th, td {
-                padding: 8px 6px;
-                font-size: 11px;
-            }
-            
-            /* Giảm padding section card cho mobile */
-            .section-card {
-                padding: 10px;
-                margin-bottom: 10px;
-            }
             
             .form-group {
-                margin-bottom: 8px;
+                flex-direction: row;
+                align-items: center;
+                gap: 8px;
             }
             
             .form-group label {
+                width: 100px;
                 font-size: 11px;
+                text-align: left;
             }
             
             .form-group input,
             .form-group select,
             .form-group textarea {
                 font-size: 12px;
-                padding: 5px 8px;
+                padding: 6px 8px;
                 height: 32px;
             }
             
-            .section-title {
-                font-size: 13px;
-                margin-bottom: 10px;
+            .form-group.full-width label {
+                width: 100px;
+                align-self: center;
+                padding-top: 0;
             }
             
-            /* Toggle section trên mobile hiển thị dạng grid 2 cột */
+            .form-group.full-width textarea {
+                height: auto;
+                min-height: 60px;
+            }
+
+            /* Mobile: Toggle section - 2 cột để giảm khoảng trống */
             .toggle-section {
                 grid-template-columns: repeat(2, 1fr);
+                gap: 8px;
             }
-        }
-
-        /* Extra small devices (portrait phones, less than 480px) */
-        @media (max-width: 480px) {
-            body {
-                padding: 0;
+            
+            .toggle-group {
+                flex-direction: row;
+                align-items: center;
+                justify-content: space-between;
+                gap: 8px;
+            }
+            
+            .toggle-group label {
+                font-size: 11px;
+                margin-bottom: 0;
+                flex: 1;
+            }
+            
+            .toggle {
+                width: 36px;
+                height: 18px;
+            }
+            
+            .toggle-slider {
+                width: 14px;
+                height: 14px;
+            }
+            
+            .toggle.active .toggle-slider {
+                transform: translateX(18px);
             }
 
-            .container {
-                border-radius: 0;
-            }
-
-            .header h1 {
-                font-size: 14px;
-                gap: 6px;
-            }
-
-            .toggle-section {
-                grid-template-columns: 1fr;
+            .button-group {
+                flex-direction: column-reverse;
+                padding: 12px;
+                gap: 8px;
             }
 
             .btn {
-                padding: 6px 8px;
-                font-size: 10px;
-                gap: 3px;
-                min-height: 30px;
-                letter-spacing: 0.1px;
+                width: 100%;
+                padding: 10px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .header h1 {
+                font-size: 16px;
             }
 
-            .btn-sm {
-                padding: 3px 6px;
-                font-size: 9px;
-                min-height: 22px;
-                gap: 2px;
+            .section-card {
+                padding: 10px;
             }
 
-            .btn-lg {
-                padding: 8px 12px;
-                font-size: 11px;
-                min-height: 36px;
-            }
-
-            /* Ẩn text trên nút nhỏ, chỉ giữ icon */
-            .btn-sm span.btn-text {
-                display: none;
-            }
-
-            /* Header buttons nhỏ hơn */
-            .header-button {
-                width: 28px;
-                height: 28px;
-                font-size: 13px;
-                padding: 3px;
-            }
-
-            .header-buttons {
-                gap: 6px;
-            }
-
-            /* Icon trong nút */
-            .btn i {
-                font-size: 12px;
-            }
-
-            .btn-sm i {
-                font-size: 11px;
-            }
-
-            /* Action buttons trong table */
-            .table-wrapper .btn-sm {
-                padding: 3px 5px;
-            }
-
-            .table-wrapper .btn-sm i {
+            .form-group label {
+                width: 90px;
                 font-size: 10px;
             }
-            
-            /* Modal tối ưu cho màn hình rất nhỏ */
-            .modal-header {
-                padding: 12px 15px;
-            }
-            
-            .modal-header h2 {
-                font-size: 15px;
-            }
-            
-            .close {
-                font-size: 24px;
-                width: 30px;
+
+            .form-group input,
+            .form-group select,
+            .form-group textarea {
+                font-size: 11px;
+                padding: 5px 8px;
                 height: 30px;
             }
             
-            .modal-body {
-                padding: 12px;
+            .form-group.full-width label {
+                width: 90px;
+                align-self: center;
+                padding-top: 0;
             }
             
-            .section-card {
-                padding: 8px;
+            .form-group.full-width textarea {
+                height: auto;
+                min-height: 60px;
             }
             
-            /* Toggle section hiển thị 1 cột trên màn hình rất nhỏ */
-            .toggle-section {
-                grid-template-columns: 1fr;
-            }
             
-            /* Form grid hiển thị 1 cột */
-            .form-grid {
-                grid-template-columns: 1fr;
-                gap: 8px;
-            }
-            
-            /* Button trong modal footer xếp dọc */
-            .modal-footer {
-                flex-direction: column;
-                gap: 8px;
-            }
-            
-            .modal-footer .btn {
-                width: 100%;
-                margin: 0;
-            }
-        }
-
-        /* X-Small devices (very small phones, less than 360px) */
-        @media (max-width: 360px) {
-            .header h1 {
-                font-size: 12px;
-            }
-            
-            .header-button {
-                width: 26px;
-                height: 26px;
-                font-size: 12px;
-            }
-            
-            .btn {
-                padding: 5px 6px;
-                font-size: 9px;
-            }
-            
-            .btn i {
-                font-size: 10px;
-            }
-            
-            .modal-header h2 {
-                font-size: 14px;
-            }
-            
-            .close {
-                font-size: 22px;
-                width: 28px;
-                height: 28px;
-            }
         }
 
         /* Select2 Custom Styling */

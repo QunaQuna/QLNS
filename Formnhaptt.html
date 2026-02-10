@@ -2414,8 +2414,7 @@
                 'Tên liên hệ khẩn cấp',
                 'SĐT liên hệ khẩn cấp'
             ];
-            
-            // Dữ liệu mẫu theo đúng file DATA_In.xlsx
+
             const sampleData = [
                 [
                     '12',
@@ -2435,7 +2434,7 @@
                     'halm@vasport.com.vn',
                     '',
                     'Thứ 7 làm việc 4h',
-                    '2017-05-03',
+                    '03-May-2017',  
                     'Văn phòng',
                     'Gián tiếp',
                     '',
@@ -2447,19 +2446,19 @@
                     'FALSE',
                     'User',
                     '059/HĐLĐ.21/NSIP',
-                    '2021-07-03',
+                    '03-Jul-2021',  
                     'Hợp đồng Không xác định thời hạn',
                     '',
                     '02240044',
                     'Phan Công Viên',
-                    '2025-09-12',
+                    '12-Sep-2025',  
                     'Đang làm việc',
                     'Note',
                     'FALSE',
                     'Khác',
                     '038190045428',
                     'Cục Cảnh sát Quản lý Hành chính về Trật tự Xã hội',
-                    '2021-08-10',
+                    '10-Aug-2021',  
                     '0781000459263',
                     'Ngân hàng TMCP Ngoại Thương Việt Nam',
                     'Ngõ 14, Khoa Giáp, TK4, Phường Tĩnh Gia, Tỉnh Thanh Hóa',
@@ -2473,7 +2472,7 @@
                     'FALSE',
                     'TRUE',
                     'TRUE',
-                    '1990-02-10',
+                    '10-Feb-1990',  
                     '3114011591',
                     'DN4383114011591',
                     '038190045428',
@@ -2506,7 +2505,7 @@
                     'truongnx@vasport.com.vn',
                     '',
                     'Theo ca đăng ký',
-                    '2017-05-03',
+                    '03-May-2017',  
                     'Cảng',
                     'Trực tiếp',
                     '',
@@ -2518,19 +2517,19 @@
                     'FALSE',
                     'User',
                     '061/HĐLĐ.21/NSIP',
-                    '2021-07-03',
+                    '03-Jul-2021',  
                     'Hợp đồng Không xác định thời hạn',
                     '',
                     '02240044',
                     'Phan Công Viên',
-                    '2025-09-12',
+                    '12-Sep-2025',  
                     'Đang làm việc',
                     '',
                     'FALSE',
                     'Khác',
                     '038090008133',
                     'Cục Cảnh sát Quản lý Hành chính về Trật tự Xã hội',
-                    '2021-08-20',
+                    '20-Aug-2021',  
                     '0781000459069',
                     'Ngân hàng TMCP Ngoại Thương Việt Nam',
                     'Khu Phố 11, Xã Thiệu Trung, Tỉnh Thanh Hóa',
@@ -2544,7 +2543,7 @@
                     'FALSE',
                     'FALSE',
                     'FALSE',
-                    '1990-10-08',
+                    '08-Oct-1990', 
                     '3814000913',
                     'DN4383814000913',
                     '038090008133',
@@ -2902,36 +2901,32 @@
         function formatExcelDate(dateValue) {
             if (!dateValue) return '';
             
+            const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 
+                            'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+            
+            let date;
+            
             // Nếu là Date object
             if (dateValue instanceof Date && !isNaN(dateValue.getTime())) {
-                const year = dateValue.getFullYear();
-                const month = String(dateValue.getMonth() + 1).padStart(2, '0');
-                const day = String(dateValue.getDate()).padStart(2, '0');
-                return `${year}-${month}-${day}`;
+                date = dateValue;
             }
-            
-            // Nếu là string đã đúng định dạng YYYY-MM-DD
-            if (typeof dateValue === 'string') {
-                if (dateValue.match(/^\d{4}-\d{2}-\d{2}$/)) {
-                    return dateValue;
+            // Nếu là string
+            else if (typeof dateValue === 'string') {
+                if (dateValue.match(/^\d{1,2}-[A-Za-z]{3}-\d{4}$/)) {
+                    return dateValue; // Đã đúng định dạng dd-MMM-yyyy
                 }
-                // Nếu là định dạng khác, parse thử
-                const parsed = new Date(dateValue);
-                if (!isNaN(parsed.getTime())) {
-                    const year = parsed.getFullYear();
-                    const month = String(parsed.getMonth() + 1).padStart(2, '0');
-                    const day = String(parsed.getDate()).padStart(2, '0');
-                    return `${year}-${month}-${day}`;
-                }
+                date = new Date(dateValue);
             }
-            
             // Nếu là số Excel serial date
-            if (typeof dateValue === 'number') {
-                const date = new Date((dateValue - 25569) * 86400 * 1000);
-                const year = date.getUTCFullYear();
-                const month = String(date.getUTCMonth() + 1).padStart(2, '0');
-                const day = String(date.getUTCDate()).padStart(2, '0');
-                return `${year}-${month}-${day}`;
+            else if (typeof dateValue === 'number') {
+                date = new Date((dateValue - 25569) * 86400 * 1000);
+            }
+            
+            if (date && !isNaN(date.getTime())) {
+                const day = String(date.getDate()).padStart(2, '0');
+                const month = monthNames[date.getMonth()];
+                const year = date.getFullYear();
+                return `${day}-${month}-${year}`;
             }
             
             return '';
